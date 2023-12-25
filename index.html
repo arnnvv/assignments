@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Todo App</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #002b36; /* Solarized Dark background color */
+        color: #839496; /* Solarized Dark text color */
+        text-align: center;
+        margin: 20px;
+      }
+
+      #todo-form {
+        max-width: 400px;
+        margin: 0 auto;
+        background-color: #073642; /* Solarized Dark panel color */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      #todo-list {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .todo-item {
+        @apply bg-solarized-dark panel p-6 mb-4 w-full box-border;
+      }
+
+      .todo-item button {
+        @apply bg-green-800 text-white py-2 px-4 rounded cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 inline-block;
+      }
+
+      .todo-item button:hover {
+        @apply bg-green-900;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="todo-form">
+      <input
+        type="text"
+        id="title"
+        placeholder="Title"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+      />
+      <input
+        type="text"
+        id="description"
+        placeholder="Description"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+      />
+      <button
+        onclick="addTodo()"
+        class="bg-green-500 text-white py-2 px-4 rounded cursor-pointer"
+      >
+        Add Todo
+      </button>
+    </div>
+
+    <div id="todo-list"></div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
