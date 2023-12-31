@@ -32,31 +32,39 @@ function App() {
     };
 
     return (
-      <div>
-        <div>
-          <input
-            type="text"
-            placeholder="Title"
-            value={newTodo.title}
-            onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            value={newTodo.description}
-            onChange={(e) =>
-              setNewTodo({ ...newTodo, description: e.target.value })
-            }
-          />
-          <button onClick={addTodo}>Add Todo</button>
+      <div id="todo-form">
+        <input
+          type="text"
+          placeholder="Title"
+          value={newTodo.title}
+          onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
+          className="w-full p-2 mb-4 border border-gray-300 rounded"
+        />
+        <input
+          type="text"
+          placeholder="Description"
+          value={newTodo.description}
+          onChange={(e) =>
+            setNewTodo({ ...newTodo, description: e.target.value })
+          }
+          className="w-full p-2 mb-4 border border-gray-300 rounded"
+        />
+        <button
+          onClick={addTodo}
+          className="bg-green-500 text-white py-2 px-4 rounded cursor-pointer"
+        >
+          Add Todo
+        </button>
+
+        <div id="todo-list">
+          {todos.map((todo, index) => (
+            <div key={index} className="todo-item">
+              <div>{todo.title}</div>
+              <div>{todo.description}</div>
+              <br />
+            </div>
+          ))}
         </div>
-        {todos.map((todo, index) => (
-          <div key={index}>
-            <div>{todo.title}</div>
-            <div>{todo.description}</div>
-            <br />
-          </div>
-        ))}
       </div>
     );
   }
