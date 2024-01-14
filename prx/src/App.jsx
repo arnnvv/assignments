@@ -1,6 +1,7 @@
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import Dashboard from "./components/Dashboard";
-import Loading from "./components/Loading";
+const Dashboard = lazy(() => import("./components/Dashboard"));
+const Loading = lazy(() => import("./components/Loading"));
 import "./App.css";
 
 function NavigationButtons() {
@@ -32,8 +33,22 @@ function App() {
       <>
         <NavigationButtons />
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/" element={<Loading />} />
+          <Route
+            path="/dashboard"
+            element={
+              <Suspense fallback={"loading..."}>
+                <Dashboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <Suspense fallback={"loading..."}>
+                <Loading />
+              </Suspense>
+            }
+          />
         </Routes>
       </>
     </BrowserRouter>
