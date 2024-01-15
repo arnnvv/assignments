@@ -1,6 +1,6 @@
 import "./App.css";
 import { countAtom } from "./store/atoms/count.jsx";
-import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
 
 function App() {
   return (
@@ -18,11 +18,11 @@ function CountRenderer() {
 }
 
 function Buttons() {
-  const [count, setCount] = useRecoilState(countAtom);
+  const setCount = useSetRecoilState(countAtom);
   return (
     <div>
-      <button onClick={() => setCount(count + 1)}>Inc</button>
-      <button onClick={() => setCount(count - 1)}>Dec</button>
+      <button onClick={() => setCount((prev) => prev + 1)}>Inc</button>
+      <button onClick={() => setCount((prev) => prev - 1)}>Dec</button>
     </div>
   );
 }
