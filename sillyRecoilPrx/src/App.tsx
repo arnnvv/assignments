@@ -7,6 +7,7 @@ import {
   notificationsAtom,
 } from "./store/atoms.ts";
 //NeverForgetRoot:(
+import { total } from "./store/selectors.ts";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function MainApp() {
   const messages = useRecoilValue(messagesAtom);
   const jobs = useRecoilValue(jobsAtom);
   const notifications = useRecoilValue(notificationsAtom);
+  const totalCount = useRecoilValue(total);
   return (
     <>
       <button>HOME</button>
@@ -30,6 +32,7 @@ function MainApp() {
       <button>
         NOTIFICATIONS({notifications >= 100 ? "99+" : notifications})
       </button>
+      <button>ME({totalCount})</button>
     </>
   );
 }
