@@ -8,6 +8,8 @@ import {
 } from "./store/atoms.ts";
 //NeverForgetRoot:(
 import { total } from "./store/selectors.ts";
+import { useEffect } from "react";
+import axios from "axios";
 
 function App() {
   return (
@@ -23,6 +25,18 @@ function MainApp() {
   const jobs = useRecoilValue(jobsAtom);
   const notifications = useRecoilValue(notificationsAtom);
   const totalCount = useRecoilValue(total);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await axios.get(
+          `https://sum-server.100xdevs.com/notifications`,
+        );
+      } catch (e) {
+        console.error(`Error in fetching Notifications ${e}`);
+      }
+    })();
+  }, []);
   return (
     <>
       <button>HOME</button>
