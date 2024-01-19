@@ -1,5 +1,5 @@
-import { atom } from "recoil";
-
+import { atom, selector } from "recoil";
+import axios from "axios";
 /*export const networkAtom = atom({
   key: "networkAtom",
   default: 104,
@@ -20,12 +20,20 @@ export const notificationsAtom = atom({
   default: 0,
 });*/
 
+//Async Data Query (Use Async data into Recoil via selectors)
 export const notificationsAtom = atom({
-  key: "notifications",
-  default: {
-    network: 104,
-    jobs: 6,
-    messaging: 3,
-    notifications: 3,
-  },
+  key: "notificationsAtom",
+  default: selector({
+    key: "notificationsAtomSelector",
+    get: async () => {
+      try {
+        const data = await axios.get(
+          `https://sum-server.100xdevs.com/notifications`,
+        );
+        return data.data;
+      } catch (e) {
+        console.error(`Error in fetching Notifications ${e}`);
+      }
+    },
+  }),
 });
