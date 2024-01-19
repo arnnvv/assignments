@@ -1,13 +1,22 @@
 import "./App.css";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState, RecoilRoot } from "recoil";
 import {
   networkAtom,
   messagesAtom,
   jobsAtom,
   notificationsAtom,
 } from "./store/atoms.ts";
+//NeverForgetRoot:(
 
 function App() {
+  return (
+    <RecoilRoot>
+      <MainApp />
+    </RecoilRoot>
+  );
+}
+
+function MainApp() {
   const network = useRecoilValue(networkAtom);
   const messages = useRecoilValue(messagesAtom);
   const jobs = useRecoilValue(jobsAtom);
