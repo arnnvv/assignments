@@ -1,5 +1,5 @@
 import "./App.css";
-import { useRecoilValue, RecoilRoot } from "recoil";
+import { RecoilRoot, useRecoilValueLoadable } from "recoil";
 import { notificationsAtom, todoAtomFamily } from "./store/atoms.ts";
 import { totalSelector } from "./store/selectors.ts";
 
@@ -15,41 +15,44 @@ function App() {
 }
 
 function MainApp() {
-  const notifications = useRecoilValue(notificationsAtom);
-  const total = useRecoilValue(totalSelector);
+  const notifications = useRecoilValueLoadable(notificationsAtom);
+  const total = useRecoilValueLoadable(totalSelector);
+
+  const renderValue = (value: number) => {
+    return value >= 100 ? "99+" : value;
+  };
+
+  const renderButton = (label: string, value: number) => {
+    return (
+      <button>
+        {label}(
+        {notifications.state === "loading" ? "loading..." : renderValue(value)})
+      </button>
+    );
+  };
 
   return (
     <>
       <button>HOME</button>
+      {renderButton("NETWORK", notifications.contents.network)}
+      {renderButton("MESSAGES", notifications.contents.messaging)}
+      {renderButton("JOBS", notifications.contents.jobs)}
+      {renderButton("NOTIFICATIONS", notifications.contents.notifications)}
       <button>
-        NETWORK({notifications.network >= 100 ? "99+" : notifications.network})
+        ME({total.state === "loading" ? "loading..." : total.contents})
       </button>
-      <button>
-        MESSAGES(
-        {notifications.messaging >= 100 ? "99+" : notifications.messaging})
-      </button>
-      <button>
-        JOBS({notifications.jobs >= 100 ? "99+" : notifications.jobs})
-      </button>
-      <button>
-        NTIFICATIONS(
-        {notifications.notifications >= 100
-          ? "99+"
-          : notifications.notifications}
-        )
-      </button>
-      <button>ME({total})</button>
     </>
   );
 }
 
 function Todo({ id }: { id: number }) {
-  const todo = useRecoilValue(todoAtomFamily(id));
-
-  return (
+  const todo = useRecoilValueLoadable(todoAtomFamily(id));
+  return todo.state === "loading" ? (
+    <>loading...</>
+  ) : (
     <>
-      {todo?.title}
-      {todo?.description}
+      {todo?.contents.title}
+      {todo?.contents.description}
       <br />
     </>
   );
