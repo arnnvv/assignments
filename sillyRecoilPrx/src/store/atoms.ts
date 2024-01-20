@@ -1,5 +1,6 @@
-import { atom, selector } from "recoil";
+import { atom, selector, atomFamily } from "recoil";
 import axios from "axios";
+import { TODOS } from "./../todos.ts";
 /*export const networkAtom = atom({
   key: "networkAtom",
   default: 104,
@@ -21,6 +22,7 @@ export const notificationsAtom = atom({
 });*/
 
 //Async Data Query (Use Async data into Recoil via selectors)
+//don't use UseRecoilState after using it it useRecoil Value just 1 is enough
 export const notificationsAtom = atom({
   key: "notificationsAtom",
   default: selector({
@@ -36,4 +38,11 @@ export const notificationsAtom = atom({
       }
     },
   }),
+});
+
+export const todoAtomFamily = atomFamily({
+  key: "todoAtomFamily",
+  default: (id) => {
+    return TODOS.find((todo) => todo.id === id);
+  },
 });
