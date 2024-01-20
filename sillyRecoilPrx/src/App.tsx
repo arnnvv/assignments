@@ -43,7 +43,7 @@ function MainApp() {
   );
 }
 
-function Todo({ id }: { id: string }) {
+function Todo({ id }: { id: number }) {
   const todo = useRecoilValue(todoAtomFamily(id));
 
   return (
