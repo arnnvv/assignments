@@ -15,10 +15,10 @@ function App() {
 }
 
 function MainApp() {
-  try {
-    const notifications = useRecoilValueLoadable(notificationsAtom);
-    const total = useRecoilValueLoadable(totalSelector);
+  const notifications = useRecoilValueLoadable(notificationsAtom);
+  const total = useRecoilValueLoadable(totalSelector);
 
+  try {
     const renderValue = (value: number) => {
       return value >= 100 ? "99+" : value;
     };
@@ -54,8 +54,8 @@ function MainApp() {
 }
 
 function Todo({ id }: { id: number }) {
+  const todo = useRecoilValueLoadable(todoAtomFamily(id));
   try {
-    const todo = useRecoilValueLoadable(todoAtomFamily(id));
     return todo.state === "loading" ? (
       <>loading...</>
     ) : (
