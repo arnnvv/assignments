@@ -9,3 +9,8 @@ export const otpLengthState = atom<number>({
   key: "otpLengthState",
   default: 4,
 });
+
+export const phoneState = atom({
+  key: "phoneState",
+  default: "",
+});

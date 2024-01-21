@@ -1,18 +1,20 @@
-import { createRef, FC } from "react";
+import { createRef, FC, ChangeEvent, KeyboardEvent } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { otpState, otpLengthState } from "./store/atoms.ts";
+import { useLocation } from "react-router-dom";
 import "./OTPInput.css";
 
 const OTPInput: FC = () => {
   const otp = useRecoilValue(otpState);
   const otpLength = useRecoilValue(otpLengthState);
 
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const phone = queryParams.get("phone");
+
   const setOtp = useRecoilState(otpState)[1];
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
     setOtp((prevOtp) => {
       const newOtp = [...prevOtp];
@@ -25,10 +27,7 @@ const OTPInput: FC = () => {
     }
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number,
-  ) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
     if (
       (e.key === "Backspace" || e.key === "Delete") &&
       index > 0 &&
@@ -46,6 +45,7 @@ const OTPInput: FC = () => {
 
   return (
     <div className="otp-input-container">
+      <h1>OTP sent to ${phone}</h1>
       {otp.map((digit, index) => (
         <input
           key={index}
