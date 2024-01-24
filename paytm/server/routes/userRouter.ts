@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import Users from "../db";
 import JWT_SECRET from "../config.ts";
+import authenticate from "../authenticate.ts";
 const userRouter = express.Router();
 
 interface User {
@@ -24,9 +25,38 @@ const validate = (user: User) => {
   return signupSchema.safeParse(user);
 };
 
-userRouter.get("/", async (req: Request, res: Response) => {
-  res.send("Hello from /users");
-});
+const validateUpdate = (user: User) => {
+  const updateSchema = zod.object({
+    password: zod.string().min(6).optional(),
+    firstName: zod.string().min(3).optional(),
+    lastName: zod.string().min(3).optional(),
+  });
+  return updateSchema.safeParse(user);
+};
+
+userRouter
+  .route("/")
+  .get(async (res: Response) => {
+    res.send("Hello from /users");
+  })
+  .put(authenticate, async (req: Request, res: Response) => {
+    const { update } = req.body;
+    if (validateUpdate(update).success) {
+      try {
+        await Users.findOneAndUpdate({ _id: req.userId }, update, {
+          new: true,
+        });
+        return res.status(200).json({
+          message: "User Updated",
+        });
+      } catch (error) {
+        console.error(`Error in updating user: ${error}`);
+        return res.status(500).json({
+          message: `Error in updating user: ${error}`,
+        });
+      }
+    } else return res.status(401).json(`Invalid Credentials`);
+  });
 
 userRouter.post("/signup", async (req: Request, res: Response) => {
   const { user } = req.body;
@@ -87,6 +117,36 @@ userRouter.post("/signin", async (req: Request, res: Response) => {
     console.error(`Error in Logging in: ${error}`);
     return res.status(500).json({
       message: `Error in Logging in`,
+    });
+  }
+});
+
+userRouter.route("/bulk").get(async (req: Request, res: Response) => {
+  const { target } = req.query || "";
+  try {
+    const users = await Users.find({
+      $or: [
+        {
+          firstName: {
+            regex: target,
+          },
+          lastName: {
+            regex: target,
+          },
+        },
+      ],
+    });
+    return res.status(200).json({
+      user: users?.map((user) => ({
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      })),
+    });
+  } catch (error) {
+    console.error(`Error in finding user: ${error}`);
+    return res.status(500).json({
+      message: `Error in finding user: ${error}`,
     });
   }
 });
