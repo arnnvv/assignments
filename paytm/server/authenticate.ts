@@ -12,11 +12,8 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
     token,
     JWT_SECRET,
     (err: jwt.VerifyErrors, decoded: string | jwt.JwtPayload) => {
-      if (err)
-        return res
-          .status(403)
-          .json({ message: `Invalid token, access denied` });
-      req.user = decoded;
+      if (err) return res.status(403).json({ message: `Invalid token` });
+      req.userId = decoded;
       next();
     },
   );

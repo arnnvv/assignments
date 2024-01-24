@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import zod from "zod";
 import jwt from "jsonwebtoken";
+import argon2 from "argon2";
 import Users from "../db";
 import JWT_SECRET from "../config.ts";
 const userRouter = express.Router();
@@ -10,6 +11,7 @@ interface User {
   password: string;
   firstName: string;
   lastName: string;
+  _id?: string;
 }
 
 const validate = (user: User) => {
@@ -38,8 +40,13 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
 
     if (existingUser) return res.status(400).json("Username already exists");
 
-    await Users.create(user);
-    const userId = user._id;
+    const hashedPassword = await argon2.hash(user.password);
+
+    const createdUser = await Users.create({
+      ...user,
+      password: hashedPassword,
+    });
+    const userId = createdUser._id;
     const token: string | undefined = jwt.sign(userId, JWT_SECRET);
     return res.status(200).json({
       message: "User Created",
@@ -60,14 +67,17 @@ userRouter.post("/signin", async (req: Request, res: Response) => {
     return res.status(401).json(`Invalid Credentials`);
 
   try {
-    const existingUser = await Users.findOne({
+    const existingUser: User | null = await Users.findOne({
       username: user.username,
     });
 
     if (!existingUser) return res.status(401).json(`Username dosen't exist`);
 
-    if (existingUser.password !== user.password)
-      return res.status(401).json(`Wrong Password`);
+    const passwordMatch = await argon2.verify(
+      existingUser.password,
+      user.password,
+    );
+    if (!passwordMatch) return res.status(401).json(`Wrong Password`);
 
     const token: string | undefined = jwt.sign(existingUser._id, JWT_SECRET);
     return res.status(200).json({
