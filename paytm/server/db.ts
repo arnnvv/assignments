@@ -32,4 +32,15 @@ const Users = mongoose.model(`user`, {
   },
 });
 
+export const Accounts = mongoose.model(`account`, {
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+    required: true,
+  },
+  balance: {
+    type: Number,
+    required: true,
+  },
+});
 export default Users;
