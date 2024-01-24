@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import zod from "zod";
 import jwt from "jsonwebtoken";
 import Users from "../db";
-const JWT_SECRET: string = "UR_SECRET_KY";
+import JWT_SECRET from "../config.ts";
 const userRouter = express.Router();
 
 interface User {
