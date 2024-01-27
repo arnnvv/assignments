@@ -25,8 +25,11 @@ accountRouter
         .status(500)
         .json({ message: `Error in fetching balance: ${error}` });
     }
-  })
-  .route("/tarnsfer")
+  });
+
+accountRouter
+  .use(authenticate)
+  .route("/transfer")
   .post(async (req: Request, res: Response) => {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -54,8 +57,10 @@ accountRouter
         message: "Transfer successful",
       });
     } catch (error) {
-      console.error(`Error in tarnsfer: ${error}`);
-      return res.status(500).json({ message: `Error in tarnsfer: ${error}` });
+      console.error(`Error in transfer: ${error}`);
+      return res.status(500).json({ message: `Error in transfer: ${error}` });
+    } finally {
+      session.endSession(); // Make sure to end the session
     }
   });
 

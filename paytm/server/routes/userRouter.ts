@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import zod from "zod";
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
-import Users, { Account } from "../db.ts";
+import Users, { Accounts } from "../db.ts";
 import JWT_SECRET from "../config.ts";
 import authenticate from "../authenticate.ts";
 const userRouter = express.Router();
@@ -77,7 +77,7 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
       password: hashedPassword,
     });
     const userId = createdUser._id;
-    await Account.create({
+    await Accounts.create({
       userId,
       balance: 1 + Math.random() * 10000,
     });
