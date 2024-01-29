@@ -1,9 +1,25 @@
-import { userAtom, User } from "../store/atoms";
-import { useRecoilValue } from "recoil";
+import { userAtom, User, filterState } from "../store/atoms";
+import { useRecoilState } from "recoil";
+import { useEffect } from "react";
 import Button from "./Button";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
-  const users = useRecoilValue(userAtom);
+  const [users, setUsers] = useRecoilState(userAtom);
+  const [filter, setFilter] = useRecoilState(filterState);
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/user/bulk?filter=${filter}`,
+        );
+        setUsers(response.data.user);
+      } catch (e) {
+        console.error(`Error in getting users: ${e}`);
+      }
+    })();
+  }, [setUsers, filter]);
   return (
     <>
       <div className="font-bold mt-6 text-lg">Users</div>
@@ -11,6 +27,7 @@ const Users = () => {
         <input
           type="text"
           placeholder="Search users..."
+          onChange={(e) => setFilter(e.target.value)}
           className="w-full px-2 py-1 border rounded border-slate-200"
         ></input>
       </div>
@@ -24,6 +41,7 @@ const Users = () => {
 };
 
 const User = ({ user }: { user: User }) => {
+  const navigate = useNavigate();
   return (
     <div className="flex justify-between">
       <div className="flex">
@@ -40,7 +58,12 @@ const User = ({ user }: { user: User }) => {
       </div>
 
       <div className="flex flex-col justify-center h-ful">
-        <Button label={"Send Money"} />
+        <Button
+          onClick={() => {
+            navigate(`/send/?id=${user._id}&name=${user.firstName}`);
+          }}
+          label={"Send Money"}
+        />
       </div>
     </div>
   );

@@ -17,6 +17,11 @@ export const userAtom = atom<User[]>({
   ],
 });
 
+export const filterState = atom({
+  key: "filterState",
+  default: "",
+});
+
 export const firstNameState = atom({
   key: "firstNameState",
   default: "",
