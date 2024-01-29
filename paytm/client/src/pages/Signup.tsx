@@ -10,13 +10,17 @@ import {
   lastNameState,
   usernameState,
   passwordState,
+  authTokenState,
 } from "../store/atoms.ts";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
   const setFirstName = useSetRecoilState(firstNameState);
   const setLastName = useSetRecoilState(lastNameState);
   const setUsername = useSetRecoilState(usernameState);
   const setPassword = useSetRecoilState(passwordState);
+  const setToken = useSetRecoilState(authTokenState);
+  const navigate = useNavigate();
   return (
     <div className="bg-slate-300 h-screen flex justify-center">
       <div className="flex flex-col justify-center">
@@ -45,13 +49,33 @@ const Signup = () => {
           />
           <div className="pt-4">
             <Button
-              onClick={() => {
-                axios.post("http://localhost:3000/api/v1/users/signup", {
-                  firstNameState,
-                  lastNameState,
-                  usernameState,
-                  passwordState,
-                });
+              onClick={async () => {
+                try {
+                  const response = await axios.post(
+                    "http://localhost:3000/api/v1/users/signup",
+                    {
+                      firstName: firstNameState,
+                      lastName: lastNameState,
+                      username: usernameState,
+                      password: passwordState,
+                    },
+                  );
+                  setToken(response.data.token);
+                  axios.interceptors.request.use(
+                    (config) => {
+                      if (response.data.token) {
+                        config.headers.Authorization = `Bearer ${response.data.token}`;
+                      }
+                      return config;
+                    },
+                    (error) => {
+                      return Promise.reject(error);
+                    },
+                  );
+                  navigate("/dashboard");
+                } catch (e) {
+                  console.error(`Error in sigining up: ${e}`);
+                }
               }}
               label={"Sign up"}
             />

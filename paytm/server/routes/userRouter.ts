@@ -10,19 +10,27 @@ const userRouter = express.Router();
 interface User {
   username: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   _id?: string;
 }
 
 const validate = (user: User) => {
   const signupSchema = zod.object({
-    username: zod.string().min(3),
+    username: zod.string().email(),
     password: zod.string().min(6),
     firstName: zod.string().min(3),
     lastName: zod.string().min(3),
   });
   return signupSchema.safeParse(user);
+};
+
+const validateLogin = (user: User) => {
+  const signinSchema = zod.object({
+    username: zod.string().email(),
+    password: zod.string().min(6),
+  });
+  return signinSchema.safeParse(user);
 };
 
 const validateUpdate = (user: User) => {
@@ -97,7 +105,7 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
 userRouter.post("/signin", async (req: Request, res: Response) => {
   const { user } = req.body;
 
-  if (!validate(user).success)
+  if (!validateLogin(user).success)
     return res.status(401).json(`Invalid Credentials`);
 
   try {
@@ -125,34 +133,37 @@ userRouter.post("/signin", async (req: Request, res: Response) => {
   }
 });
 
-userRouter.route("/bulk").get(async (req: Request, res: Response) => {
-  const { target } = req.query || "";
-  try {
-    const users = await Users.find({
-      $or: [
-        {
-          firstName: {
-            regex: target,
+userRouter
+  .use(authenticate)
+  .route("/bulk")
+  .get(async (req: Request, res: Response) => {
+    const { target } = req.query || "";
+    try {
+      const users = await Users.find({
+        $or: [
+          {
+            firstName: {
+              regex: target,
+            },
+            lastName: {
+              regex: target,
+            },
           },
-          lastName: {
-            regex: target,
-          },
-        },
-      ],
-    });
-    return res.status(200).json({
-      user: users?.map((user) => ({
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      })),
-    });
-  } catch (error) {
-    console.error(`Error in finding user: ${error}`);
-    return res.status(500).json({
-      message: `Error in finding user: ${error}`,
-    });
-  }
-});
+        ],
+      });
+      return res.status(200).json({
+        user: users?.map((user) => ({
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        })),
+      });
+    } catch (error) {
+      console.error(`Error in finding user: ${error}`);
+      return res.status(500).json({
+        message: `Error in finding user: ${error}`,
+      });
+    }
+  });
 
 export default userRouter;
